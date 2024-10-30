@@ -1,125 +1,145 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 5
+struct Node {
+    int data;
+    struct Node* next;
+};
 
-typedef struct {
-    int items[MAX];
-    int front;
-    int rear;
-} CircularQueue;
-
-void initializeQueue(CircularQueue *q) {
-    q->front = -1;
-    q->rear = -1;
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
 }
 
-int isFull(CircularQueue *q) {
-    return (q->rear + 1) % MAX == q->front;
-}
-
-int isEmpty(CircularQueue *q) {
-    return q->front == -1;
-}
-
-void insert(CircularQueue *q, int value) {
-    if (isFull(q)) {
-        printf("Queue overflow");
-        return;
+struct Node* insertAtEnd(struct Node* head, int data) {
+    struct Node* newNode = createNode(data);
+    if (head == NULL) {
+        return newNode;
     }
-    if (isEmpty(q)) {
-        q->front = 0;
+    struct Node* temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
     }
-    q->rear = (q->rear + 1) % MAX;
-    q->items[q->rear] = value;
-    printf("Inserted %d into the queue\n", value);
+    temp->next = newNode;
+    return head;
 }
 
-void delete(CircularQueue *q) {
-    if (isEmpty(q)) {
-        printf("Queue underflow");
-        return;
+struct Node* deleteFirst(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty. No element to delete.\n");
+        return NULL;
     }
-    int deletedValue = q->items[q->front];
-    printf("Deleted %d from the queue\n", deletedValue);
-    if (q->front == q->rear) {
+    struct Node* temp = head;
+    head = head->next;
+    free(temp);
+    return head;
+}
 
-        q->front = -1;
-        q->rear = -1;
+struct Node* deleteElement(struct Node* head, int key) {
+    struct Node* current = head;
+    struct Node* previous = NULL;
+    while (current != NULL && current->data != key) {
+        previous = current;
+        current = current->next;
+    }
+    if (current == NULL) {
+        printf("Element %d not found in the list.\n", key);
+        return head;
+    }
+    if (previous == NULL) {
+        head = current->next;
     } else {
-        q->front = (q->front + 1) % MAX;
+        previous->next = current->next;
     }
+    free(current);
+    return head;
 }
 
-void display(CircularQueue *q) {
-    if (isEmpty(q)) {
-        printf("Queue is empty\n");
+struct Node* deleteLast(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty. No element to delete.\n");
+        return NULL;
+    }
+    struct Node* current = head;
+    struct Node* previous = NULL;
+    while (current->next != NULL) {
+        previous = current;
+        current = current->next;
+    }
+    if (previous == NULL) {
+        free(current);
+        return NULL;
+    }
+    previous->next = NULL;
+    free(current);
+    return head;
+}
+
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
         return;
     }
-    printf("Queue elements: ");
-    int i = q->front;
-    while (1) {
-        printf("%d ", q->items[i]);
-        if (i == q->rear) {
-            break;
-        }
-        i = (i + 1) % MAX;
+    struct Node* temp = head;
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
     }
-    printf("\n");
+    printf("NULL\n");
 }
 
 int main() {
-    CircularQueue q;
-    initializeQueue(&q);
-
-    int choice, value;
+    struct Node* head = NULL;
+    int choice, data;
 
     do {
-        printf("\nCircular Queue Operations:\n");
-        printf("1. Insert\n");
-        printf("2. Delete\n");
-        printf("3. Display\n");
-        printf("4. Exit\n");
+        printf("\nMenu:\n");
+        printf("1. Insert at end\n");
+        printf("2. Delete first element\n");
+        printf("3. Delete specified element\n");
+        printf("4. Delete last element\n");
+        printf("5. Display list\n");
+        printf("6. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                printf("Enter value to insert: ");
-                scanf("%d", &value);
-                insert(&q, value);
+                printf("Enter data to insert at end: ");
+                scanf("%d", &data);
+                head = insertAtEnd(head, data);
                 break;
             case 2:
-                delete(&q);
+                head = deleteFirst(head);
+                printf("After deleting first element: ");
+                displayList(head);
                 break;
             case 3:
-                display(&q);
+                printf("Enter element to delete: ");
+                scanf("%d", &data);
+                head = deleteElement(head, data);
                 break;
             case 4:
-                printf("Exiting...\n");
+                head = deleteLast(head);
+                printf("After deleting last element: ");
+                displayList(head);
+                break;
+            case 5:
+                printf("Linked List contents:\n");
+                displayList(head);
+                break;
+            case 6:
+                printf("Exiting program.\n");
                 break;
             default:
-                printf("Invalid Choice.\n");
+                printf("Invalid choice, please try again.\n");
         }
-    } while (choice != 4);
+    } while (choice != 6);
 
     return 0;
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Write a program in C to stimulate the working of a circular queue of integers using arrays. Provide the following operations: Insert, delete and display. Program should print appropriate messages for Queue overflow and underflow
