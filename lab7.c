@@ -32,7 +32,7 @@ void createList(struct Node** head) {
         struct Node* newNode = createNode(data);
 
         if (*head == NULL) {
-            *head = newNode;  // The first node
+            *head = newNode;
         } else {
             struct Node* temp = *head;
             while (temp->next != NULL) {
@@ -126,7 +126,6 @@ int main() {
     int choice, data, existingData;
 
     do {
-        // Display menu options
         printf("\nDoubly Linked List Operations:\n");
         printf("1. Create list\n");
         printf("2. Display list\n");
@@ -148,7 +147,7 @@ int main() {
                 scanf("%d", &data);
                 printf("Enter the existing node value to insert before: ");
                 scanf("%d", &existingData);
-                insertLeft(&head, data, existingData);  // Pass head by reference
+                insertLeft(&head, data, existingData);
                 break;
             case 4:
                 printf("Enter the value of the node to delete: ");
