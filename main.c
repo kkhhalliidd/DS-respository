@@ -1,145 +1,105 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-struct Node {
+struct Node{
     int data;
-    struct Node* next;
+    struct Node*left;
+    struct Node*right;
 };
 
-struct Node* createNode(int data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->next = NULL;
-    return newNode;
+struct Node* newNode(int data) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = data;
+    node->left = node->right = NULL;
+    return node;
 }
 
-struct Node* insertAtEnd(struct Node* head, int data) {
-    struct Node* newNode = createNode(data);
-    if (head == NULL) {
-        return newNode;
+struct Node* insert(struct Node* root, int data) {
+    if (root == NULL) {
+        return newNode(data);
     }
-    struct Node* temp = head;
-    while (temp->next != NULL) {
-        temp = temp->next;
+    if (data < root->data) {
+        root->left = insert(root->left, data);
+    } else if (data > root->data) {
+        root->right = insert(root->right, data);
     }
-    temp->next = newNode;
-    return head;
+    return root;
 }
 
-struct Node* deleteFirst(struct Node* head) {
-    if (head == NULL) {
-        printf("List is empty. No element to delete.\n");
-        return NULL;
+void inorder(struct Node*root){
+    if (root!=NULL){
+        inorder(root -> left);
+        printf("%d ", root -> data);
+        inorder(root -> right);
     }
-    struct Node* temp = head;
-    head = head->next;
-    free(temp);
-    return head;
 }
 
-struct Node* deleteElement(struct Node* head, int key) {
-    struct Node* current = head;
-    struct Node* previous = NULL;
-    while (current != NULL && current->data != key) {
-        previous = current;
-        current = current->next;
-    }
-    if (current == NULL) {
-        printf("Element %d not found in the list.\n", key);
-        return head;
-    }
-    if (previous == NULL) {
-        head = current->next;
-    } else {
-        previous->next = current->next;
-    }
-    free(current);
-    return head;
+void postorder(struct Node*root){
+    if (root!=NULL){
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root -> data);
+        }
 }
 
-struct Node* deleteLast(struct Node* head) {
-    if (head == NULL) {
-        printf("List is empty. No element to delete.\n");
-        return NULL;
+void preorder(struct Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
     }
-    struct Node* current = head;
-    struct Node* previous = NULL;
-    while (current->next != NULL) {
-        previous = current;
-        current = current->next;
-    }
-    if (previous == NULL) {
-        free(current);
-        return NULL;
-    }
-    previous->next = NULL;
-    free(current);
-    return head;
-}
-
-void displayList(struct Node* head) {
-    if (head == NULL) {
-        printf("List is empty.\n");
-        return;
-    }
-    struct Node* temp = head;
-    while (temp != NULL) {
-        printf("%d -> ", temp->data);
-        temp = temp->next;
-    }
-    printf("NULL\n");
 }
 
 int main() {
-    struct Node* head = NULL;
+    struct Node* root = NULL;
     int choice, data;
 
-    do {
+    root = insert(root, 50);
+    root = insert(root, 10);
+    root = insert(root, 30);
+    root = insert(root, 40);
+    root = insert(root, 70);
+    root = insert(root, 60);
+    root = insert(root, 20);
+
+    while (1) {
         printf("\nMenu:\n");
-        printf("1. Insert at end\n");
-        printf("2. Delete first element\n");
-        printf("3. Delete specified element\n");
-        printf("4. Delete last element\n");
-        printf("5. Display list\n");
-        printf("6. Exit\n");
+        printf("1. In-order Traversal\n");
+        printf("2. Pre-order Traversal\n");
+        printf("3. Post-order Traversal\n");
+        printf("4. Display Tree (In-order)\n");
+        printf("5. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                printf("Enter data to insert at end: ");
-                scanf("%d", &data);
-                head = insertAtEnd(head, data);
+                printf("In-order Traversal: ");
+                inorder(root);
+                printf("\n");
                 break;
             case 2:
-                head = deleteFirst(head);
-                printf("After deleting first element: ");
-                displayList(head);
+                printf("Pre-order Traversal: ");
+                preorder(root);
+                printf("\n");
                 break;
             case 3:
-                printf("Enter element to delete: ");
-                scanf("%d", &data);
-                head = deleteElement(head, data);
+                printf("Post-order Traversal: ");
+                postorder(root);
+                printf("\n");
                 break;
             case 4:
-                head = deleteLast(head);
-                printf("After deleting last element: ");
-                displayList(head);
+                printf("In-order Traversal: ");
+                inorder(root);
+                printf("\n");
                 break;
             case 5:
-                printf("Linked List contents:\n");
-                displayList(head);
-                break;
-            case 6:
-                printf("Exiting program.\n");
-                break;
+                printf("Exiting the program.\n");
+                exit(0);
             default:
-                printf("Invalid choice, please try again.\n");
+                printf("Invalid choice! Please try again.\n");
         }
-    } while (choice != 6);
+    }
 
     return 0;
 }
-
-
-
